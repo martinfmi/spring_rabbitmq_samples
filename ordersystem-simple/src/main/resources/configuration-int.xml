@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:amqp="http://www.springframework.org/schema/integration/amqp"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:stream="http://www.springframework.org/schema/integration/stream"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans.xsd
+                                 http://www.springframework.org/schema/context
+                                 http://www.springframework.org/schema/context/spring-context.xsd
+                                 http://www.springframework.org/schema/rabbit
+           						 http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+                                 http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.1.xsd
+                                 http://www.springframework.org/schema/integration/stream
+                                 http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.1.xsd
+                                 http://www.springframework.org/schema/integration/amqp
+           						 http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd
+           						 http://www.springframework.org/schema/integration
+						         http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<rabbit:connection-factory id="connectionFactory"
+		host="localhost" />
+	<channel id="test-channel" />
+	<channel id="bread-order-channel" />
+	<channel id="milk-order-channel" />
+	<channel id="apple-order-channel" />
+	<channel id="rabbit-order-channel" />
+
+	<channel id="bread-byte-order-channel" />
+	<channel id="milk-byte-order-channel" />
+	<channel id="apple-byte-order-channel" />
+	<channel id="rabbit-byte-order-channel" />
+	
+	<!-- required in order to pre-create queues -->
+	<rabbit:admin id="amqpAdmin" connection-factory="connectionFactory"/>
+		
+	<rabbit:queue name="bread-queue" />
+	<rabbit:queue name="milk-queue" />
+	<rabbit:queue name="apple-queue" />
+	<rabbit:queue name="rabbit-queue" />
+	
+<!-- 	<int:object-to-string-transformer input-channel="milk-order-channel" output-channel="milk-byte-order-channel"/> -->
+<!-- 	<int:object-to-string-transformer input-channel="apple-order-channel" output-channel="apple-byte-order-channel"/> -->
+	
+	<int:payload-serializing-transformer input-channel="bread-order-channel" output-channel="bread-byte-order-channel"/>
+	<int:payload-serializing-transformer input-channel="milk-order-channel" output-channel="milk-byte-order-channel"/>
+	<int:payload-serializing-transformer input-channel="apple-order-channel" output-channel="apple-byte-order-channel"/>
+	<int:payload-serializing-transformer input-channel="rabbit-order-channel" output-channel="rabbit-byte-order-channel"/>
+	
+	<rabbit:template id="amqpTemplate" connection-factory="connectionFactory" />
+
+	<amqp:outbound-channel-adapter channel="bread-byte-order-channel"
+		exchange-name="" routing-key="bread-queue" amqp-template="amqpTemplate" />
+
+	<amqp:outbound-channel-adapter channel="milk-byte-order-channel"
+		exchange-name="" routing-key="milk-queue" amqp-template="amqpTemplate" />
+
+	<amqp:outbound-channel-adapter channel="apple-byte-order-channel"
+		exchange-name="" routing-key="apple-queue" amqp-template="amqpTemplate" />
+
+	<amqp:outbound-channel-adapter channel="rabbit-byte-order-channel"
+		exchange-name="" routing-key="rabbit-queue" amqp-template="amqpTemplate" />
+	
+	<int:router input-channel="test-channel" expression="payload.type + '-order-channel'" />
+	
+</beans:beans>

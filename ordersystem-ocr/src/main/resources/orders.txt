@@ -1,0 +1,7 @@
+type=bread;quantity=3;price=1.20
+type=milk;price=2.0
+type=apple;quantity=5;price=2.20
+type=rabbit;price=100
+type=composite;price=254;orders=(type=rabbit;price=250|type=rabbit;price=150)
+type=image;url=http://i.imgur.com/NgkEsCn.png
+type=image;url=http://i.imgur.com/YXw9BiX.png

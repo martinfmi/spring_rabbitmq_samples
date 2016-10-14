@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:amqp="http://www.springframework.org/schema/integration/amqp"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans.xsd
+                                 http://www.springframework.org/schema/context
+                                 http://www.springframework.org/schema/context/spring-context.xsd
+                                 http://www.springframework.org/schema/rabbit
+           						 http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+                                 http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.1.xsd
+                                 http://www.springframework.org/schema/integration/stream
+                                 http://www.springframework.org/schema/integration/stream/spring-integration-stream-4.1.xsd
+                                 http://www.springframework.org/schema/integration/amqp
+           						 http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd">
+
+	<rabbit:connection-factory id="connectionFactory"
+		host="localhost" />
+	<channel id="test-channel" />
+	
+	<rabbit:queue name="test-queue" />
+	<rabbit:queue name="test-destination-queue" />
+
+	<rabbit:template id="amqpTemplate" connection-factory="connectionFactory"
+		exchange="" routing-key="test-queue" />
+		
+	<amqp:inbound-channel-adapter channel="test-channel"
+		queue-names="test-queue" connection-factory="connectionFactory" />
+
+	<amqp:outbound-channel-adapter channel="test-channel"
+		exchange-name="" routing-key="test-destination-queue" amqp-template="amqpTemplate" />
+		
+</beans:beans>
